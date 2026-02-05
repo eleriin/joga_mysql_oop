@@ -1,0 +1,19 @@
+{
+  "name": "joga_mysql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.22.1",
+    "express-handlebars": "^8.0.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.16.3",
+    "nodemon": "^3.1.9"
+  }
+}

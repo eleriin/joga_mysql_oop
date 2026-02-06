@@ -9,6 +9,10 @@ class articleController{
         const articles = await articleModel.findAll()
         res.status(201).json({articles: articles})
     }
+    async getAllArticleBySlug(req,res){
+        const article = await articleModel.findOne(req.params.slug)
+        res.status(201).json({article:article})
+    }
 }
 
 module.exports = articleController

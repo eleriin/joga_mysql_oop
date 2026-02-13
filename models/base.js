@@ -22,17 +22,17 @@ class BaseSQLModel {
     return results
   }
   async findById(id){
-    const query = `SELECT * FROM ${this.tableName}WHERE id=?`
+    const query = `SELECT * FROM ${this.tableName} WHERE id=?`
     const results = await this.executeQuery(query, [id])
     return results[0]
   }
   async findOne(where, value){
-    const query = `SELECT *FROM ${this.tableName} WHERE ${where}="${value}"`
+    const query = `SELECT * FROM ${this.tableName} WHERE ${where}="${value}"`
     const results = await this.executeQuery(query, [where, value])
     return results[0]
   }
   async findMany(where, value){
-    const query=`SELECT *FROM ${this.tableName}WHERE ${where}="${value}"`
+    const query=`SELECT * FROM ${this.tableName} WHERE ${where}="${value}"`
     const results = await this.executeQuery(query, [where, value])
     return results
   }

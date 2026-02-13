@@ -6,7 +6,7 @@ class AuthorModel extends BaseSQLModel{
     }
 
     async findAuthorById(id){
-        const author = await super.findById('id',id)
+        const author = await super.findById(id)
         return author;
     }
     async findAll(){

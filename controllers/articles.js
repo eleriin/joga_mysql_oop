@@ -28,6 +28,37 @@ class articleController{
             article: {id: articleId, ...newArticle}
         })
     }
+    async updateArticle(req,res){
+        try {
+            const id = req.params.id
+
+            const excistingArticle = await articleModel.findById(id)
+            if (!excistingArticle){
+                return res.status(404).json({
+                    message: `Article with id ${id} not found`
+                })
+            }
+            
+            const updateData = {
+                name: req.body.name,
+                slug: req.body.slug,
+                image: req.body.image,
+                body: req.body.body,            
+                published: new Date().toISOString().slice(0, 19).replace('T',' ') ,          
+                author_id: req.body.author_id
+            }
+            const updatedArticle = await articleModel.update(id, updateData)
+            res.status(201).json({
+                message: `Updated article with id ${updatedArticle}`,
+                article: {id: updatedArticle, ...updateData}
+            })
+        } catch (error){
+            res.status(500).json({
+                message: error.message
+            })
+        }
+        
+    }
 }
 
 module.exports = articleController

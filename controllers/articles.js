@@ -13,7 +13,7 @@ class articleController{
         const article = await articleModel.findOne(req.params.slug)
         res.status(201).json({article:article})
     }
-    async creteNewArticle(req,res){
+    async createNewArticle(req,res){
         const newArticle = {
             name: req.body.name,
             slug: req.body.slug,
@@ -38,7 +38,7 @@ class articleController{
                     message: `Article with id ${id} not found`
                 })
             }
-            
+
             const updateData = {
                 name: req.body.name,
                 slug: req.body.slug,
@@ -58,6 +58,28 @@ class articleController{
             })
         }
         
+    }
+    
+    async deleteRows (req, res){
+        try{
+            const id = req.params.id
+            
+            const excistingArticle = await articleModel.findById(id)
+                if (!excistingArticle){
+                    return res.status(404).json({
+                        message: `Article with id ${id} not found`
+                    })
+                }
+
+                const deletedRows = await articleModel.delete(id)
+                res.status(201).json({
+                    message:`Article with id ${id} deleted successfully`
+                })
+        } catch (error){ 
+            res.status(500).json({
+                message: error.message
+            })
+        }
     }
 }
 

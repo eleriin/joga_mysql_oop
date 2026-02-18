@@ -12,6 +12,10 @@ class UserModel extends BaseSQLModel{
         const user = await super.findById(id)
         return user;
     }
+    async findByUsername(username){
+        const user = await super.findOne('username',username)
+        return user;
+    }
     async create(user){
         const createUserId = await super.create(user)
         return createUserId

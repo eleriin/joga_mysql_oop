@@ -43,6 +43,30 @@ class userControllerClass {
             res.status(500).json({message: error.message})
         }
     }
+    async findUserById (username){
+        const user = await super.findOne('username', username)
+        return user
+    }
+    async login(req,res){
+        const {username, password} = req.body
+        
+        const user = await userModel.findByUsername(username)
+        if(!user){
+            return res.status(404).json({message: 'User not found'})
+        }
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch){ 
+            return res.status(400).json({message: 'Invalid password'})
+        }
+        req.session.user = {
+            username: user.username, 
+            user_id: user.id
+        }
+        res.json({
+            message: 'Login successful',
+            user_session: req.session.user
+        })
+    }
 }
 
 module.exports = userControllerClass

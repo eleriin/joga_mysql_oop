@@ -5,7 +5,7 @@ const userModel = new userDbModel()
 class userControllerClass {
     async register(req,res){
         try{
-            const { username, email, password } = req.body
+            const { username, email, password, role } = req.body
 
             const existingUser = await userModel.findByEmail(email)
             if (existingUser){
@@ -22,17 +22,18 @@ class userControllerClass {
             
             const cryptPassword = await bcrypt.hash(password, 10)
             const registeredId = await userModel.create({
-                username, 
-                email,
-                password: cryptPassword
+                username: req.body.username, 
+                email: req.body.email, 
+                password: cryptPassword,
+                role: req.body.role || 'user'
             })
-
-        
+             
             if (registeredId){
                 const userData = await userModel.findUserById(registeredId)
                 req.session.user = {
                     username: userData.username, 
-                    user_id: userData.id
+                    user_id: userData.id,
+                    role: userData.role
                 }
                 return res.status(201).json({
                     message: 'New user is registered',
@@ -60,13 +61,15 @@ class userControllerClass {
         }
         req.session.user = {
             username: user.username, 
-            user_id: user.id
+            user_id: user.id,
+            role: user.role
         }
         res.json({
             message: 'Login successful',
             user_session: req.session.user
         })
     }
+    
 }
 
 module.exports = userControllerClass

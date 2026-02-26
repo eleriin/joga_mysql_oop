@@ -126,3 +126,33 @@ table td, table th {
 table th {
     background-color: #eee;
 }
+
+.admin-btn {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    background-color: #3D518C;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.admin-actions {
+    margin-top: 10px;
+}
+
+.edit-btn {
+    margin-right: 10px;
+    color: #3D518C;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.delete-btn {
+    background-color: #c0392b;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}

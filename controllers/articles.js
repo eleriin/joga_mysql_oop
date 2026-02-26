@@ -7,11 +7,11 @@ class articleController{
     }
     async getAllArticles(req, res){
         const articles = await articleModel.findAll()
-        res.status(201).json({articles: articles})
+        res.render('index',{articles: articles})
     }
     async getAllArticleBySlug(req,res){
         const article = await articleModel.findOne(req.params.slug)
-        res.status(201).json({article:article})
+        res.render('article', { article})
     }
     async createNewArticle(req,res){
         const newArticle = {
@@ -23,11 +23,13 @@ class articleController{
             author_id: req.body.author_id
         }
         const articleId = await articleModel.create(newArticle)
-        res.status(201).json({
-            message: `created article with id ${articleId}`,
-            article: {id: articleId, ...newArticle}
-        })
+        
+        return res.redirect('/articles')
     }
+    async showCreater(req,res){
+        res.render('article-create')
+    }
+
     async updateArticle(req,res){
         try {
             const id = req.params.id
@@ -81,6 +83,7 @@ class articleController{
             })
         }
     }
+
 }
 
 module.exports = articleController

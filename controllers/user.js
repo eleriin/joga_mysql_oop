@@ -1,75 +1,101 @@
-const bcrypt = require ('bcrypt')
-const userDbModel = require('../models/users')
-const userModel = new userDbModel()
+const bcrypt = require('bcrypt')
+const UserModel = require('../models/users')
 
-class userControllerClass {
-    async register(req,res){
+class UserController {
+    constructor(){
+        this.model = new UserModel()
+
+        this.register= this.register.bind(this)
+        this.login = this.login.bind(this)
+        this.logout = this.logout.bind(this)
+        this.showLogin = this.showLogin.bind(this)
+        this.showRegister = this.showRegister.bind(this)
+    }
+
+    showLogin(req,res){
+        res.render('login')
+    }
+
+    showRegister(req, res){
+        res.render('register')
+    }
+
+    async register ( req,res){
         try{
-            const { username, email, password, role } = req.body
 
-            const existingUser = await userModel.findByEmail(email)
+            const existingUser = await this.model.findByUsername(req.body.username)
+
             if (existingUser){
-                return res.status(400).json({message:'Email is already registered'})
-            }
-            if(password.length < 6){
-                return res.status(400).json({message: 'Password must be at least 6 charaters long'})
-            }
-
-            const passwordRegex = /^(?=.*[A-Z])(?=.*\d).+$/;
-            if (!passwordRegex.test(password)) {
-                return res.status(400).json({ message: 'Password must contain at least one uppercase letter and one number' });
-            }
-            
-            const cryptPassword = await bcrypt.hash(password, 10)
-            const registeredId = await userModel.create({
-                username: req.body.username, 
-                email: req.body.email, 
-                password: cryptPassword,
-                role: req.body.role || 'user'
-            })
-             
-            if (registeredId){
-                const userData = await userModel.findUserById(registeredId)
-                req.session.user = {
-                    username: userData.username, 
-                    user_id: userData.id,
-                    role: userData.role
-                }
-                return res.status(201).json({
-                    message: 'New user is registered',
-                    user_session: req.session.user
+                return res.render('register',{
+                    msg: 'Username already exists'
                 })
             }
-        } catch (error){
-            res.status(500).json({message: error.message})
+
+            if (req.body.password.length < 6){
+                return res.render('register',{
+                    msg: 'Password must be at least 6 characters long'
+                })
+            }
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+            if (!req.body.password.match(passwordRegex)){
+                return res.render('register', {
+                    msg:'Password must include uppercase, lowercase, number and special character'
+                })
+            }
+
+            const cryptPassword = await bcrypt.hash(req.body.password, 10)
+
+            const registeredUserId = await this.model.create({
+                username: req.body.username,
+                email: req.body.email,
+                password: cryptPassword,
+                role: 'user'
+            })
+
+            const userData = await this.model.findUserById(registeredUserId)
+
+            req.session.user = {
+                user_id: userData.id,
+                username: userData.username,
+                role: userData.role
+            }
+
+            return res.redirect('/')
+        } catch( error){
+            res.render('register', {msg: error.message})
         }
-    }
-    async findUserById (username){
-        const user = await super.findOne('username', username)
-        return user
     }
     async login(req,res){
-        const {username, password} = req.body
-        
-        const user = await userModel.findByUsername(username)
-        if(!user){
-            return res.status(404).json({message: 'User not found'})
+        try{
+            const user = await this.model.findByUsername(req.body.username)
+
+            if (!user){
+                return res.render('login',{msg: 'username not exists'})
+            }
+            const passwordCompare = await bcrypt.compare(
+                req.body.password,
+                user.password
+            )
+            if (!passwordCompare){
+                return res.render('login', { msg: 'password is incorrect'})
+            }
+
+            req.session.user= {
+                user_id: user.id,
+                username: user.username,
+                role: user.role
+            }
+            return res.redirect('/')
+        }catch ( error){
+            res.render('login',{msg:error.message})
         }
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (!isMatch){ 
-            return res.status(400).json({message: 'Invalid password'})
-        }
-        req.session.user = {
-            username: user.username, 
-            user_id: user.id,
-            role: user.role
-        }
-        res.json({
-            message: 'Login successful',
-            user_session: req.session.user
+    }
+    logout(req,res){
+        req.session.destroy(()=>{
+            res.redirect('/')
         })
     }
-    
 }
 
-module.exports = userControllerClass
+module.exports = new UserController();

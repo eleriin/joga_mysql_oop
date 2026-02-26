@@ -12,6 +12,15 @@
     <header>
         <a href="/">Yoga Blog</a>
         <hr>
+
+        {{#if user}}
+            <p>Welcome {{user.username}} ({{user.role}})</p>
+            <a href="/users/logout">Logout</a>
+        {{else}}
+            <a href="/users/login">Login</a>
+            <a href="/users/register">Register</a>
+        {{/if}}
+
     </header>
     {{#msg}}<div class="alert">{{.}}</div>{{/msg}}
     <main>

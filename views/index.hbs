@@ -1,12 +1,31 @@
 <h1>Homepage</h1>
 
+{{#if (eq user.role "admin")}}
+    <a href="/articles/create" class="admin-btn">+ Create Article</a>
+{{/if}}
+
 <div class="article-list">
     {{#articles}}
     <article>
-        <a href="/article/{{slug}}">
+
+        {{#if (eq ../user.role "admin")}}
+            <div class="admin-actions">
+                <a href="/articles/edit/{{id}}" class="edit-btn">Edit</a>
+
+                <form action="/articles/delete/{{id}}" method="POST" style="display:inline;">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
+        {{/if}}
+
+        <a href="/articles/{{slug}}">
             <img src="/images/{{image}}"/>
         </a>
-        <h2><a href="/article/{{slug}}">{{name}}</a> </h2>
+
+        <h2>
+            <a href="/articles/{{slug}}">{{name}}</a>
+        </h2>
+
     </article>
     {{/articles}}
 </div>

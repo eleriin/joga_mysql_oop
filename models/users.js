@@ -17,6 +17,7 @@ class UserModel extends BaseSQLModel{
         return user;
     }
     async create(user){
+        user.role = user.role || 'user'
         const createUserId = await super.create(user)
         return createUserId
     }
